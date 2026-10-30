@@ -4068,6 +4068,14 @@ install(FILES
         DESTINATION ${WEB_DEST})
 
 #
+# argus console (self-contained page, served at /argus/)
+#
+install(FILES
+        src/web/gui/argus/index.html
+        COMPONENT netdata
+        DESTINATION ${WEB_DEST}/argus)
+
+#
 # service files
 #
 
