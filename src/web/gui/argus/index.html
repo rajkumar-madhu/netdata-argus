@@ -10,7 +10,7 @@
 :root {
   --bg: #f2f4f7; --panel: #ffffff; --ink: #18202b; --muted: #5f6b7a; --line: #dde3ea; --grid: #edf0f4;
   --accent: #0f6e8c; --ok: #2f9a57; --warn: #b97f0f; --crit: #d2423a; --anom: #8e4fc4;
-  --c0: #2b67d1; --c1: #e08a24; --c2: #1f9e8a; --c3: #b3489a; --c4: #6a7fdb; --c5: #c4572e; --c6: #4d9b3a; --c7: #8a6d3b;
+  --c0: #2b67d1; --c1: #e08a24; --c2: #1f9e8a; --c3: #b3489a; --c4: #6a7fdb; --c5: #c4572e; --c6: #4d9b3a; --c7: #8a6d3b; --c8: #c43b6e; --c9: #2f8fb8;
   --font-ui: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
   color-scheme: light;
@@ -19,7 +19,7 @@
   :root {
     --bg: #0f1419; --panel: #161d25; --ink: #e4e9ef; --muted: #96a2b0; --line: #273341; --grid: #1d2630;
     --accent: #4fb3d1; --ok: #4cc27a; --warn: #e5b23d; --crit: #f06a60; --anom: #b783f0;
-    --c0: #6b9cf0; --c1: #f0a54a; --c2: #3cc4ad; --c3: #d77cc0; --c4: #9aa8f5; --c5: #ec8a63; --c6: #7cc76a; --c7: #c9a86b;
+    --c0: #6b9cf0; --c1: #f0a54a; --c2: #3cc4ad; --c3: #d77cc0; --c4: #9aa8f5; --c5: #ec8a63; --c6: #7cc76a; --c7: #c9a86b; --c8: #ef7aa6; --c9: #6cc3e6;
     color-scheme: dark;
   }
 }
@@ -484,7 +484,7 @@ td.mono { white-space: nowrap; }
 
   function colors() {
     var pal = [];
-    for (var i = 0; i < 8; i++) pal.push(cssv("--c" + i));
+    for (var i = 0; i < 10; i++) pal.push(cssv("--c" + i));
     return { ink: cssv("--ink"), muted: cssv("--muted"), line: cssv("--line"), grid: cssv("--grid"), anom: cssv("--anom"), mono: cssv("--font-mono") || "monospace", pal: pal };
   }
   function drawAll() { if (state.view !== "overview") return; var col = colors(); cards.forEach(function (it) { draw(it, col); }); }
