@@ -26,12 +26,12 @@
 * { box-sizing: border-box; }
 body { margin: 0; background: var(--bg); color: var(--ink); font: 15px/1.45 var(--font-ui); }
 .mono { font-family: var(--font-mono); font-size: 0.86em; }
-button, select { font: inherit; color: inherit; }
-button:focus-visible, select:focus-visible, a:focus-visible, tr:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+button, select, input { font: inherit; color: inherit; }
+button:focus-visible, select:focus-visible, input:focus-visible, a:focus-visible, tr:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 [hidden] { display: none !important; }
 
 .bar { position: sticky; top: 0; z-index: 5; background: var(--panel); border-bottom: 1px solid var(--line); }
-.bar-in, main { max-width: 1360px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+.bar-in, main { max-width: 1440px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
 .bar-in { padding-block: 10px; display: flex; flex-wrap: wrap; align-items: center; gap: 10px 18px; }
 .brand { display: flex; align-items: baseline; gap: 8px; margin-right: 6px; }
 .brand b { font-size: 21px; font-weight: 700; letter-spacing: -0.01em; }
@@ -45,22 +45,24 @@ nav.tabs a[aria-current="page"] { color: var(--ink); background: var(--grid); bo
 .spacer { flex: 1 1 auto; }
 .ctl { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
 .ctl label { font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; }
-select { background: var(--bg); border: 1px solid var(--line); border-radius: 6px; padding: 6px 10px; font-family: var(--font-mono); font-size: 13px; max-width: 220px; }
-.seg { display: inline-flex; border: 1px solid var(--line); border-radius: 6px; overflow: hidden; }
+select, input[type="search"] { background: var(--bg); border: 1px solid var(--line); border-radius: 6px; padding: 6px 10px; font-size: 13px; }
+select { font-family: var(--font-mono); max-width: 220px; }
+input[type="search"] { min-width: 0; width: 100%; max-width: 320px; }
+.seg { display: inline-flex; flex-wrap: wrap; border: 1px solid var(--line); border-radius: 6px; overflow: hidden; }
 .seg button { background: var(--bg); border: 0; padding: 6px 10px; font: 500 13px var(--font-mono); cursor: pointer; color: var(--muted); }
 .seg button + button { border-left: 1px solid var(--line); }
 .seg button[aria-pressed="true"] { background: var(--ink); color: var(--panel); }
-.live { display: inline-flex; align-items: center; gap: 7px; cursor: pointer; background: var(--bg); border: 1px solid var(--line); border-radius: 6px; padding: 6px 10px; font-size: 13px; font-weight: 600; }
+.btn { display: inline-flex; align-items: center; gap: 7px; cursor: pointer; background: var(--bg); border: 1px solid var(--line); border-radius: 6px; padding: 6px 11px; font-size: 13px; font-weight: 600; }
+.btn:hover { border-color: var(--muted); }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: var(--panel); }
+.btn[aria-pressed="true"] .box { background: var(--accent); border-color: var(--accent); }
+.btn .box { width: 12px; height: 12px; border-radius: 3px; border: 1.5px solid var(--muted); }
 .live i { width: 8px; height: 8px; border-radius: 50%; background: var(--ok); }
 .live[aria-pressed="false"] i { background: var(--muted); }
 .live.stale i { background: var(--crit); }
 
 main { padding-block: 18px 40px; display: grid; gap: 16px; }
 .banner { border: 1px solid var(--crit); color: var(--ink); background: var(--panel); border-left: 4px solid var(--crit); border-radius: 6px; padding: 10px 14px; font-size: 14px; }
-.summary { display: flex; flex-wrap: wrap; gap: 8px 28px; align-items: baseline; padding: 4px 2px 2px; }
-.summary h1 { font-size: 25px; font-weight: 700; margin: 0 8px 0 0; letter-spacing: -0.01em; overflow-wrap: anywhere; }
-.stat { display: flex; align-items: baseline; gap: 6px; font-size: 14px; color: var(--muted); }
-.stat b { font-size: 16px; color: var(--ink); font-variant-numeric: tabular-nums; }
 .pill { display: inline-flex; align-items: center; gap: 5px; font-size: 12px; font-weight: 600; line-height: 1; padding: 4px 8px; border-radius: 999px; border: 1px solid currentColor; white-space: nowrap; }
 .pill::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
 .pill.CRITICAL { color: var(--crit); }
@@ -68,24 +70,55 @@ main { padding-block: 18px 40px; display: grid; gap: 16px; }
 .pill.CLEAR, .pill.ok { color: var(--ok); }
 .pill.UNDEFINED, .pill.UNINITIALIZED, .pill.REMOVED, .pill.off { color: var(--muted); }
 
+/* summary tiles: the node first, then the numbers that need attention */
+.tiles { display: grid; grid-template-columns: minmax(0, 2fr) repeat(3, minmax(0, 1fr)); gap: 12px; }
+@media (max-width: 900px) { .tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); } .tile.node { grid-column: 1 / -1; } }
+.tile { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 12px 14px; display: grid; gap: 4px; align-content: start; min-width: 0; border-left: 4px solid var(--line); }
+.tile .k { font: 600 11px var(--font-mono); letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
+.tile .v { font-size: 24px; font-weight: 700; font-variant-numeric: tabular-nums; line-height: 1.15; overflow-wrap: anywhere; }
+.tile .v.small { font: 500 15px var(--font-mono); }
+.tile .s { font-size: 13px; color: var(--muted); }
+.tile.CRITICAL { border-left-color: var(--crit); }
+.tile.WARNING { border-left-color: var(--warn); }
+.tile.CLEAR { border-left-color: var(--ok); }
+.tile.node { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 14px; }
+.tile.node h1 { font-size: 24px; font-weight: 700; margin: 0; letter-spacing: -0.01em; overflow-wrap: anywhere; }
+
+.toolbar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 10px; }
+.toolbar .hint { font-size: 13px; color: var(--muted); }
+
+.picker { background: var(--panel); border: 1px solid var(--accent); border-radius: 8px; padding: 12px 14px; display: grid; gap: 10px; }
+.picker-h { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; }
+.picker-h b { font-size: 15px; }
+.picker-list { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 6px; max-height: 320px; overflow-y: auto; }
+.picker-list button { width: 100%; text-align: left; background: var(--bg); border: 1px solid var(--line); border-radius: 6px; padding: 8px 10px; cursor: pointer; display: grid; gap: 2px; }
+.picker-list button:hover { border-color: var(--accent); }
+.picker-list button[disabled] { opacity: 0.5; cursor: default; }
+.picker-list .t { font-weight: 600; font-size: 14px; }
+.picker-list .c { font: 12px var(--font-mono); color: var(--muted); overflow-wrap: anywhere; }
+
 .wall { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
 @media (max-width: 900px) { .wall { grid-template-columns: minmax(0, 1fr); } }
 .card { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 12px 14px 10px; display: grid; gap: 8px; min-width: 0; transition: box-shadow .4s; }
 .card.flash { box-shadow: 0 0 0 3px var(--accent); }
-.card-h { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 4px 12px; }
+.card-h { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
+.card-h .ti { display: grid; gap: 1px; min-width: 0; }
 .card-h h2 { font-size: 16px; font-weight: 600; margin: 0; }
-.ctx { font: 500 12px var(--font-mono); color: var(--muted); }
+.ctx { font: 500 12px var(--font-mono); color: var(--muted); overflow-wrap: anywhere; }
+.rm { flex: none; background: transparent; border: 1px solid transparent; border-radius: 6px; width: 28px; height: 28px; cursor: pointer; color: var(--muted); font-size: 18px; line-height: 1; }
+.rm:hover { border-color: var(--line); color: var(--ink); }
 .legend { display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: 13px; min-height: 20px; }
 .legend span { display: inline-flex; align-items: center; gap: 6px; }
 .legend i { width: 10px; height: 10px; border-radius: 2px; }
 .legend b { font: 500 13px var(--font-mono); font-variant-numeric: tabular-nums; }
 .legend .t { color: var(--muted); font-family: var(--font-mono); font-size: 12px; margin-left: auto; }
 .plotwrap { position: relative; }
-canvas.plot { width: 100%; height: 190px; display: block; cursor: crosshair; touch-action: pan-y; }
+canvas.plot { width: 100%; height: 220px; display: block; cursor: crosshair; touch-action: pan-y; }
 .plotmsg { position: absolute; inset: 0; display: grid; place-items: center; color: var(--muted); font-size: 14px; text-align: center; padding: 0 20px; }
 details.q { font-size: 12px; color: var(--muted); }
 details.q summary { cursor: pointer; width: max-content; max-width: 100%; }
 details.q pre { margin: 6px 0 0; padding: 8px 10px; background: var(--bg); border-radius: 6px; overflow-x: auto; font: 12px/1.5 var(--font-mono); color: var(--ink); }
+.empty-wall { grid-column: 1 / -1; border: 1px dashed var(--line); border-radius: 8px; padding: 32px 16px; text-align: center; color: var(--muted); }
 .foot { font-size: 13px; color: var(--muted); display: flex; flex-wrap: wrap; gap: 6px 20px; }
 .foot i { display: inline-block; width: 18px; height: 6px; border-radius: 2px; background: var(--anom); vertical-align: middle; margin-right: 6px; }
 
@@ -103,6 +136,12 @@ td.mono { white-space: nowrap; }
 .section-h { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 8px 16px; }
 .section-h h1 { font-size: 25px; font-weight: 700; margin: 0; }
 .section-h p { margin: 0; color: var(--muted); font-size: 14px; max-width: 70ch; }
+.filters { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; }
+.sevtabs button { display: inline-flex; gap: 6px; align-items: baseline; }
+.sevtabs b { font-variant-numeric: tabular-nums; }
+.sevtabs button[data-af="CRITICAL"] b { color: var(--crit); }
+.sevtabs button[data-af="WARNING"] b { color: var(--warn); }
+.sevtabs button[aria-pressed="true"] b { color: inherit; }
 .empty { padding: 28px 14px; text-align: center; color: var(--muted); }
 @media (max-width: 680px) {
   table, tbody, tr, td { display: block; }
@@ -136,7 +175,7 @@ td.mono { white-space: nowrap; }
         <button type="button" data-w="900" aria-pressed="true">15m</button>
         <button type="button" data-w="3600" aria-pressed="false">1h</button>
       </div>
-      <button type="button" class="live" id="live" aria-pressed="true"><i></i><span>Live</span></button>
+      <button type="button" class="btn live" id="live" aria-pressed="true"><i></i><span>Live</span></button>
     </div>
   </div>
 </div>
@@ -146,13 +185,31 @@ td.mono { white-space: nowrap; }
 
   <section data-v="overview">
     <div style="display:grid; gap:16px">
-      <div class="summary">
-        <h1 id="ov-title">Loading…</h1>
-        <div class="stat"><span id="ov-status"></span></div>
-        <div class="stat">Raised alerts <b id="ov-alerts">–</b></div>
-        <div class="stat">Anomaly rate in view <b id="ov-anom">–</b></div>
-        <div class="stat">Agent <b id="ov-version" class="mono" style="font-size:13px; font-weight:500">–</b></div>
+      <div class="tiles">
+        <div class="tile node" id="t-node"><h1 id="ov-title">Loading…</h1><span id="ov-status"></span><span class="s mono" id="ov-version"></span></div>
+        <div class="tile" id="t-alerts"><span class="k">Raised alerts</span><span class="v" id="ov-alerts">–</span><span class="s" id="ov-alerts-s"></span></div>
+        <div class="tile" id="t-anom"><span class="k">Anomaly rate in view</span><span class="v" id="ov-anom">–</span><span class="s" id="ov-anom-s"></span></div>
+        <div class="tile" id="t-charts"><span class="k">Charts</span><span class="v" id="ov-charts">–</span><span class="s" id="ov-charts-s"></span></div>
       </div>
+
+      <div class="toolbar">
+        <button type="button" class="btn primary" id="add-chart">+ Add chart</button>
+        <button type="button" class="btn" id="hide-zero" aria-pressed="true"><span class="box"></span>Hide zero lines</button>
+        <button type="button" class="btn" id="reset-charts">Reset charts</button>
+        <span class="hint">Your chart choice is saved in this browser.</span>
+      </div>
+
+      <div class="picker" id="picker" hidden>
+        <div class="picker-h">
+          <b>Add a chart</b>
+          <input type="search" id="picker-q" placeholder="Search by name, context or family" aria-label="Search charts">
+          <span class="spacer"></span>
+          <span class="hint mono" id="picker-count"></span>
+          <button type="button" class="btn" id="picker-close">Done</button>
+        </div>
+        <ul class="picker-list" id="picker-list"><li class="hint">Loading charts…</li></ul>
+      </div>
+
       <div class="wall" id="wall"></div>
       <div class="foot">
         <span><i></i>Strip under each chart: ML anomaly rate of that chart's dimensions (the <span class="mono">arp</span> value of each point).</span>
@@ -165,11 +222,18 @@ td.mono { white-space: nowrap; }
     <div style="display:grid; gap:14px">
       <div class="section-h">
         <h1>Alerts</h1>
-        <p>Alert instances on every node this Agent knows about, from <span class="mono">/api/v3/alerts</span>. Select a row to open that node's charts.</p>
+        <p>Alert instances on every node this Agent knows about, from <span class="mono">/api/v3/alerts</span>. Select a row to open that chart on its node.</p>
       </div>
-      <div class="seg" role="group" aria-label="Filter alerts" style="justify-self:start">
-        <button type="button" data-af="raised" aria-pressed="true">Raised</button>
-        <button type="button" data-af="all" aria-pressed="false">All</button>
+      <div class="filters">
+        <div class="seg sevtabs" role="group" aria-label="Filter by status" id="sevtabs">
+          <button type="button" data-af="raised" aria-pressed="true">Raised <b id="n-raised">0</b></button>
+          <button type="button" data-af="CRITICAL" aria-pressed="false">Critical <b id="n-crit">0</b></button>
+          <button type="button" data-af="WARNING" aria-pressed="false">Warning <b id="n-warn">0</b></button>
+          <button type="button" data-af="CLEAR" aria-pressed="false">Clear <b id="n-clear">0</b></button>
+          <button type="button" data-af="all" aria-pressed="false">All <b id="n-all">0</b></button>
+        </div>
+        <select id="alert-node" aria-label="Filter by node"><option value="">All nodes</option></select>
+        <input type="search" id="alert-q" placeholder="Search alert, chart or summary" aria-label="Search alerts">
       </div>
       <div class="tablewrap">
         <table>
@@ -200,14 +264,17 @@ td.mono { white-space: nowrap; }
 (function () {
   "use strict";
 
-  /* Charts on the overview. Dimensions, units, titles and chart type all come from the Agent's response. */
-  var CONTEXTS = ["system.cpu", "system.ram", "system.io", "system.net", "system.load", "system.processes"];
+  /* Default charts. Dimensions, units, titles and chart type all come from the Agent's response. */
+  var DEFAULT_CHARTS = ["system.cpu", "system.ram", "system.io", "system.net", "system.load", "system.processes"];
   var POLL_MS = 1000;
   var API = "../api/v3/";   // served at /argus/, so this resolves to /api/v3/ on the same Agent
 
   var state = {
-    view: "overview", win: 900, live: true, af: "raised",
+    view: "overview", win: 900, live: true,
+    af: "raised", anode: "", aq: "",
     nodes: [], node: null, hover: null, alerts: null, alertNodes: [],
+    charts: loadCharts(), hideZero: store("argus.hidezero") !== "0",
+    catalog: null, catalogNode: null,
     error: null, inflight: false
   };
 
@@ -215,6 +282,15 @@ td.mono { white-space: nowrap; }
   function esc(s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", "\"": "&quot;", "'": "&#39;" }[c]; }); }
   function cssv(name) { return getComputedStyle(document.documentElement).getPropertyValue(name).trim(); }
   function store(k, v) { try { if (v === undefined) return localStorage.getItem(k); localStorage.setItem(k, v); } catch (e) { return null; } }
+  function loadCharts() {
+    try {
+      var a = JSON.parse(store("argus.charts") || "null");
+      if (Array.isArray(a) && a.every(function (x) { return typeof x === "string"; })) return a;
+    } catch (e) { /* fall through to defaults */ }
+    return DEFAULT_CHARTS.slice();
+  }
+  function saveCharts() { store("argus.charts", JSON.stringify(state.charts)); }
+  function cardId(ctxName) { return "card-" + ctxName.replace(/[^A-Za-z0-9_-]/g, "-"); }
   function pointsFor(w) { return w === 3600 ? 360 : 300; }
   function hms(t) { return new Date(t * 1000).toTimeString().slice(0, 8); }
   function hm(t) { return new Date(t * 1000).toTimeString().slice(0, 5); }
@@ -286,7 +362,7 @@ td.mono { white-space: nowrap; }
       clearError();
     });
   }
-  sel.addEventListener("change", function () { state.node = sel.value; store("argus.node", state.node); state.hover = null; resetCharts(); refresh(); });
+  sel.addEventListener("change", function () { state.node = sel.value; store("argus.node", state.node); state.hover = null; resetCharts(); refresh(); if (!picker.hidden) loadCatalog(); });
 
   /* ---------- controls ---------- */
   document.querySelectorAll("[data-w]").forEach(function (b) {
@@ -303,31 +379,94 @@ td.mono { white-space: nowrap; }
     liveBtn.querySelector("span").textContent = state.live ? "Live" : "Paused";
     if (state.live) refresh();
   });
-  document.querySelectorAll("[data-af]").forEach(function (b) {
-    b.addEventListener("click", function () {
-      state.af = b.getAttribute("data-af");
-      document.querySelectorAll("[data-af]").forEach(function (x) { x.setAttribute("aria-pressed", x === b ? "true" : "false"); });
-      loadAlerts().then(renderAlerts).catch(showError);
-    });
+  var zeroBtn = document.getElementById("hide-zero");
+  zeroBtn.setAttribute("aria-pressed", state.hideZero ? "true" : "false");
+  zeroBtn.addEventListener("click", function () {
+    state.hideZero = !state.hideZero;
+    store("argus.hidezero", state.hideZero ? "1" : "0");
+    zeroBtn.setAttribute("aria-pressed", state.hideZero ? "true" : "false");
+    resetCharts(); refresh();
   });
+  document.getElementById("reset-charts").addEventListener("click", function () {
+    state.charts = DEFAULT_CHARTS.slice(); saveCharts(); buildCards(); refresh(); renderPicker();
+  });
+
+  /* ---------- chart picker (catalog from /api/v3/contexts) ---------- */
+  var picker = document.getElementById("picker"), pickerQ = document.getElementById("picker-q");
+  document.getElementById("add-chart").addEventListener("click", function () {
+    picker.hidden = false; pickerQ.focus(); loadCatalog();
+  });
+  document.getElementById("picker-close").addEventListener("click", function () { picker.hidden = true; });
+  pickerQ.addEventListener("input", renderPicker);
+
+  function loadCatalog() {
+    if (!state.node) return;
+    if (state.catalog && state.catalogNode === state.node) { renderPicker(); return; }
+    apiGet("contexts?scope_nodes=" + encodeURIComponent(state.node) + "&options=titles").then(function (d) {
+      var c = d.contexts || {};
+      state.catalog = Object.keys(c).map(function (k) {
+        return { ctx: k, title: c[k].title || k, family: c[k].family || "", units: c[k].units || "", prio: c[k].priority || 0, live: c[k].live !== false };
+      }).sort(function (a, b) { return a.prio - b.prio || (a.ctx < b.ctx ? -1 : 1); });
+      state.catalogNode = state.node;
+      renderPicker();
+    }).catch(function (e) {
+      document.getElementById("picker-list").innerHTML = '<li class="hint">Could not load the chart list (' + esc(e.message) + ').</li>';
+    });
+  }
+  function renderPicker() {
+    if (picker.hidden || !state.catalog) return;
+    var q = pickerQ.value.trim().toLowerCase();
+    var hits = state.catalog.filter(function (c) {
+      return !q || c.ctx.toLowerCase().indexOf(q) >= 0 || c.title.toLowerCase().indexOf(q) >= 0 || c.family.toLowerCase().indexOf(q) >= 0;
+    });
+    document.getElementById("picker-count").textContent = hits.length + " of " + state.catalog.length + " charts";
+    var shown = hits.slice(0, 120);
+    var list = document.getElementById("picker-list");
+    if (!shown.length) { list.innerHTML = '<li class="hint">No chart matches “' + esc(q) + '”.</li>'; return; }
+    list.innerHTML = shown.map(function (c) {
+      var added = state.charts.indexOf(c.ctx) >= 0;
+      return '<li><button type="button" data-ctx="' + esc(c.ctx) + '"' + (added ? ' disabled' : '') + '>' +
+        '<span class="t">' + esc(c.title) + (added ? ' · on the page' : '') + '</span>' +
+        '<span class="c">' + esc(c.ctx) + ' · ' + esc(unitLabel(c.units)) + (c.live ? '' : ' · not collecting') + '</span></button></li>';
+    }).join("") + (hits.length > shown.length ? '<li class="hint">' + (hits.length - shown.length) + ' more. Type to narrow the list.</li>' : '');
+    list.querySelectorAll("button[data-ctx]").forEach(function (b) {
+      b.addEventListener("click", function () { addChart(b.getAttribute("data-ctx")); });
+    });
+  }
+  function addChart(ctxName, quiet) {
+    if (state.charts.indexOf(ctxName) < 0) { state.charts.push(ctxName); saveCharts(); buildCards(); refresh(); }
+    if (!quiet) renderPicker();
+  }
+  function removeChart(ctxName) {
+    state.charts = state.charts.filter(function (c) { return c !== ctxName; });
+    saveCharts(); buildCards(); drawAll(); renderPicker(); renderSummary();
+  }
 
   /* ---------- chart cards ---------- */
   var wall = document.getElementById("wall"), cards = [];
-  CONTEXTS.forEach(function (ctxName) {
+  function buildCards() {
+    var keep = {};
+    cards.forEach(function (c) { keep[c.ctx] = c; });
+    cards = state.charts.map(function (ctxName) { return keep[ctxName] || makeCard(ctxName); });
+    wall.innerHTML = "";
+    cards.forEach(function (c) { wall.appendChild(c.card); });
+    if (!cards.length) wall.innerHTML = '<div class="empty-wall">No charts on the page. Use “+ Add chart” to pick some, or “Reset charts” for the defaults.</div>';
+  }
+  function makeCard(ctxName) {
     var card = document.createElement("article");
-    card.className = "card"; card.id = "card-" + ctxName.replace(/\./g, "-");
+    card.className = "card"; card.id = cardId(ctxName);
     card.innerHTML =
-      '<div class="card-h"><h2>' + esc(ctxName) + '</h2><span class="ctx">' + esc(ctxName) + '</span></div>' +
+      '<div class="card-h"><div class="ti"><h2>' + esc(ctxName) + '</h2><span class="ctx">' + esc(ctxName) + '</span></div>' +
+      '<button type="button" class="rm" title="Remove this chart" aria-label="Remove ' + esc(ctxName) + '">×</button></div>' +
       '<div class="legend"></div>' +
       '<div class="plotwrap"><canvas class="plot" role="img" aria-label="' + esc(ctxName) + ' chart"></canvas><div class="plotmsg">Loading…</div></div>' +
       '<details class="q"><summary>Agent query</summary><pre></pre></details>';
-    wall.appendChild(card);
     var item = {
       ctx: ctxName, card: card, cv: card.querySelector("canvas"), leg: card.querySelector(".legend"),
       msg: card.querySelector(".plotmsg"), pre: card.querySelector("pre"), h2: card.querySelector("h2"),
       unitsEl: card.querySelector(".ctx"), res: null, geo: null, colors: {}, nextColor: 0
     };
-    cards.push(item);
+    card.querySelector(".rm").addEventListener("click", function () { removeChart(ctxName); });
     function hover(ev) {
       if (!item.geo || !item.res) return;
       var rect = item.cv.getBoundingClientRect(), x = ev.clientX - rect.left, G = item.geo;
@@ -338,12 +477,14 @@ td.mono { white-space: nowrap; }
     item.cv.addEventListener("pointermove", hover);
     item.cv.addEventListener("pointerdown", hover);
     item.cv.addEventListener("pointerleave", function () { state.hover = null; drawAll(); });
-  });
+    return item;
+  }
   function resetCharts() { cards.forEach(function (c) { c.res = null; c.colors = {}; c.nextColor = 0; c.msg.textContent = "Loading…"; c.msg.hidden = false; }); }
 
   function dataQuery(ctxName) {
     return "data?scope_nodes=" + encodeURIComponent(state.node) + "&scope_contexts=" + encodeURIComponent(ctxName) +
-      "&after=-" + state.win + "&points=" + pointsFor(state.win) + "&time_group=average&group_by=dimension&format=json2";
+      "&after=-" + state.win + "&points=" + pointsFor(state.win) + "&time_group=average&group_by=dimension&format=json2" +
+      (state.hideZero ? "&options=nonzero" : "");   // the Agent drops dimensions that are zero for the whole window
   }
 
   /* Turn a json2 response into oldest-first arrays per dimension. */
@@ -489,7 +630,7 @@ td.mono { white-space: nowrap; }
   }
   function drawAll() { if (state.view !== "overview") return; var col = colors(); cards.forEach(function (it) { draw(it, col); }); }
 
-  function loadCharts() {
+  function loadChartData() {
     if (!state.node) return Promise.resolve();
     return Promise.all(cards.map(function (item) {
       var q = dataQuery(item.ctx);
@@ -507,9 +648,17 @@ td.mono { white-space: nowrap; }
     })).then(drawAll);
   }
 
-  /* ---------- summary ---------- */
+  /* ---------- summary tiles ---------- */
+  function setTileState(id, st) {
+    var el = document.getElementById(id);
+    el.classList.remove("CRITICAL", "WARNING", "CLEAR");
+    if (st) el.classList.add(st);
+  }
   function renderSummary() {
     var n = currentNode();
+    document.getElementById("ov-charts").textContent = cards.length;
+    var missing = cards.filter(function (c) { return !c.res; }).length;
+    document.getElementById("ov-charts-s").textContent = missing ? missing + " without data on this node" : (state.hideZero ? "zero lines hidden" : "all lines shown");
     if (!n) return;
     document.getElementById("ov-title").textContent = nodeLabel(n);
     var al = (n.health && n.health.alerts) || {}, crit = al.critical || 0, warn = al.warning || 0;
@@ -518,22 +667,26 @@ td.mono { white-space: nowrap; }
     document.getElementById("ov-status").innerHTML = online
       ? '<span class="pill ' + st + '">' + (st === "CLEAR" ? "Healthy" : st === "WARNING" ? "Warning" : "Critical") + '</span>'
       : '<span class="pill off">' + esc(n.state) + '</span>';
+    document.getElementById("ov-version").textContent = n.v ? "Agent " + n.v : "";
+    setTileState("t-node", online ? st : null);
     document.getElementById("ov-alerts").textContent = crit + warn;
+    document.getElementById("ov-alerts-s").textContent = crit + " critical · " + warn + " warning";
+    setTileState("t-alerts", st);
     var ml = (n.capabilities || []).filter(function (c) { return c.name === "ml"; })[0];
-    var anomEl = document.getElementById("ov-anom");
-    if (ml && !ml.enabled) anomEl.textContent = "ML off";
+    var anomEl = document.getElementById("ov-anom"), anomS = document.getElementById("ov-anom-s");
+    if (ml && !ml.enabled) { anomEl.textContent = "ML off"; anomS.textContent = "anomaly detection is disabled on this node"; }
     else {
       var s = 0, k = 0;
       cards.forEach(function (c) { if (c.res) c.res.arp.forEach(function (a) { s += a; k++; }); });
       anomEl.textContent = k ? (s / k).toFixed(2) + "%" : "–";
+      anomS.textContent = "average across charts on the page";
     }
-    document.getElementById("ov-version").textContent = n.v || "–";
   }
 
   /* ---------- alerts ---------- */
   function loadAlerts() {
-    var q = "alerts?options=instances,values" + (state.af === "raised" ? "&status=raised" : "");
-    return apiGet(q).then(function (d) {
+    // always fetch every instance: the status tabs need counts for all of them
+    return apiGet("alerts?options=instances,values").then(function (d) {
       state.alerts = d.alert_instances || [];
       state.alertNodes = d.nodes || [];
     });
@@ -549,12 +702,53 @@ td.mono { white-space: nowrap; }
     b.textContent = crit + warn; b.hidden = !(crit + warn); b.classList.toggle("warn", !crit);
   }
   var RANK = { CRITICAL: 0, WARNING: 1, CLEAR: 2, UNDEFINED: 3, UNINITIALIZED: 4, REMOVED: 5 };
+  function matchStatus(st) {
+    if (state.af === "all") return true;
+    if (state.af === "raised") return st === "CRITICAL" || st === "WARNING";
+    return st === state.af;
+  }
+  document.querySelectorAll("[data-af]").forEach(function (b) {
+    b.addEventListener("click", function () {
+      state.af = b.getAttribute("data-af");
+      document.querySelectorAll("[data-af]").forEach(function (x) { x.setAttribute("aria-pressed", x === b ? "true" : "false"); });
+      renderAlerts();
+    });
+  });
+  var aNodeSel = document.getElementById("alert-node"), aQ = document.getElementById("alert-q");
+  aNodeSel.addEventListener("change", function () { state.anode = aNodeSel.value; renderAlerts(); });
+  aQ.addEventListener("input", function () { state.aq = aQ.value.trim().toLowerCase(); renderAlerts(); });
+
   function renderAlerts() {
     var tb = document.getElementById("alert-rows");
     if (!state.alerts) return;
-    var rows = state.alerts.slice().sort(function (x, y) { return (RANK[x.st] - RANK[y.st]) || ((y.tr_t || 0) - (x.tr_t || 0)); });
+
+    // node filter options, kept stable so the selection survives refreshes
+    var opts = '<option value="">All nodes</option>' + state.alertNodes.map(function (n) {
+      return '<option value="' + esc(n.mg || n.nm) + '">' + esc(n.nm) + '</option>';
+    }).join("");
+    if (aNodeSel.getAttribute("data-opts") !== opts) { aNodeSel.innerHTML = opts; aNodeSel.setAttribute("data-opts", opts); aNodeSel.value = state.anode; }
+
+    var byNode = state.alerts.filter(function (a) {
+      if (state.anode) { var n = alertNode(a); if ((n.mg || n.nm) !== state.anode) return false; }
+      if (state.aq) {
+        var hay = [a.nm, a.ctx, a.ch, a.sum, a.info].join(" ").toLowerCase();
+        if (hay.indexOf(state.aq) < 0) return false;
+      }
+      return true;
+    });
+    var cnt = { CRITICAL: 0, WARNING: 0, CLEAR: 0 };
+    byNode.forEach(function (a) { if (cnt[a.st] !== undefined) cnt[a.st]++; });
+    document.getElementById("n-crit").textContent = cnt.CRITICAL;
+    document.getElementById("n-warn").textContent = cnt.WARNING;
+    document.getElementById("n-clear").textContent = cnt.CLEAR;
+    document.getElementById("n-raised").textContent = cnt.CRITICAL + cnt.WARNING;
+    document.getElementById("n-all").textContent = byNode.length;
+
+    var rows = byNode.filter(function (a) { return matchStatus(a.st); })
+      .sort(function (x, y) { return (RANK[x.st] - RANK[y.st]) || ((y.tr_t || 0) - (x.tr_t || 0)); });
     if (!rows.length) {
-      tb.innerHTML = '<tr><td colspan="6" class="empty">' + (state.af === "raised" ? "No alerts are raised on any node." : "No alerts are configured.") + '</td></tr>';
+      var why = state.aq || state.anode ? "No alerts match these filters." : state.af === "raised" ? "No alerts are raised on any node." : "No alerts in this group.";
+      tb.innerHTML = '<tr><td colspan="6" class="empty">' + esc(why) + '</td></tr>';
       return;
     }
     tb.innerHTML = rows.map(function (a, i) {
@@ -602,14 +796,16 @@ td.mono { white-space: nowrap; }
     });
   }
 
+  // From an alert: switch node, make sure its chart is on the page, then point at it.
   function openNode(mg, ctxName) {
     if (mg && mg !== state.node) { state.node = mg; sel.value = mg; store("argus.node", mg); resetCharts(); }
+    if (ctxName) addChart(ctxName, true);
     state.hover = null;
     location.hash = "overview";
     route();
     refresh().then(function () {
       if (!ctxName) return;
-      var target = document.getElementById("card-" + ctxName.replace(/\./g, "-"));
+      var target = document.getElementById(cardId(ctxName));
       if (!target) return;
       target.scrollIntoView({ block: "center", behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
       target.classList.add("flash"); setTimeout(function () { target.classList.remove("flash"); }, 1600);
@@ -626,7 +822,7 @@ td.mono { white-space: nowrap; }
     if (!state.nodes.length || tick % 5 === 0 || state.view === "nodes") jobs.push(loadNodes());
     return Promise.all(jobs).then(function () {
       var more = [];
-      if (state.view === "overview") more.push(loadCharts());
+      if (state.view === "overview") more.push(loadChartData());
       if (state.view === "alerts" || tick % 5 === 0 || !state.alerts) more.push(loadAlerts());
       return Promise.all(more);
     }).then(function () {
@@ -662,6 +858,7 @@ td.mono { white-space: nowrap; }
   }, POLL_MS);
   document.addEventListener("visibilitychange", function () { if (!document.hidden && state.live) refresh(); });
 
+  buildCards();
   route();
   refresh();
 })();
