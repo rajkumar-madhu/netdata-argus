@@ -4879,6 +4879,35 @@ if(ENABLE_DASHBOARD)
           COMPONENT dashboard
           DESTINATION ${WEB_DEST})
 
+  install(CODE "
+    set(_argus_web \"\${CMAKE_INSTALL_PREFIX}/${WEB_DEST}\")
+    if(EXISTS \"\${_argus_web}/index.html\"
+       AND NOT EXISTS \"\${_argus_web}/netdata-cloud-welcome.html\")
+      file(RENAME \"\${_argus_web}/index.html\"
+           \"\${_argus_web}/netdata-cloud-welcome.html\")
+    endif()
+  " COMPONENT dashboard)
+
+  install(FILES
+          "${CMAKE_SOURCE_DIR}/src/web/argus-gate/index.html"
+          "${CMAKE_SOURCE_DIR}/packaging/web/argus-auto-enter.js"
+          COMPONENT dashboard
+          DESTINATION ${WEB_DEST})
+
+  install(CODE "
+    set(_argus_web \"\${CMAKE_INSTALL_PREFIX}/${WEB_DEST}\")
+    set(_welcome \"\${_argus_web}/netdata-cloud-welcome.html\")
+    if(EXISTS \"\${_welcome}\")
+      file(READ \"\${_welcome}\" _welcome_body)
+      if(NOT _welcome_body MATCHES \"argus-auto-enter.js\")
+        string(REPLACE \"</body>\"
+                 \"<script src=\\\"/argus-auto-enter.js\\\"></script></body>\"
+                 _welcome_body \"\${_welcome_body}\")
+        file(WRITE \"\${_welcome}\" \"\${_welcome_body}\")
+      endif()
+    endif()
+  " COMPONENT dashboard)
+
 endif()
 
 #
